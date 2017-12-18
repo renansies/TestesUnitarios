@@ -113,8 +113,8 @@ public class LocacaoServiceTest {
 		Locacao locacao = service.alugarFilme(usuario, filmes);
 		
 		//verificacao
-//		assertThat(locacao.getDataRetorno(), new DiaSemanaMatcher(Calendar.MONDAY));
 		assertThat(locacao.getDataRetorno(), caiNumaSegunda());
 	}
+
 	
 }
