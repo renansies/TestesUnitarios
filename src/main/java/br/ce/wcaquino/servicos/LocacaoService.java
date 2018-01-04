@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import br.ce.wcaquino.daos.LocacaoDAO;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -17,6 +18,7 @@ public class LocacaoService {
 	
 	public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws LocadoraException, FilmeSemEstoqueException {
 		
+		LocacaoDAO dao = null;
 		double precoLocacao = 0;
 		
 		if(usuario == null){
@@ -67,7 +69,7 @@ public class LocacaoService {
 		locacao.setValor(precoLocacao);
 		
 		//Salvando a locacao...	
-		//TODO adicionar método para salvar
+		dao.salvar(locacao);
 		
 		return locacao;
 	}
