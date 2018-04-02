@@ -15,10 +15,11 @@ import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.utils.DataUtils;
 
 public class LocacaoService {
+		
+	private LocacaoDAO dao; 
 	
 	public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws LocadoraException, FilmeSemEstoqueException {
-		
-		LocacaoDAO dao = null;
+
 		double precoLocacao = 0;
 		
 		if(usuario == null){
@@ -73,4 +74,14 @@ public class LocacaoService {
 		
 		return locacao;
 	}
+
+	public LocacaoDAO getDao() {
+		return dao;
+	}
+
+	public void setDao(LocacaoDAO dao) {
+		this.dao = dao;
+	}
+	
+	
 }
