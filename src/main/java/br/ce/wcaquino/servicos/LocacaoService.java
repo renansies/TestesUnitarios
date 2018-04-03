@@ -16,7 +16,9 @@ import br.ce.wcaquino.utils.DataUtils;
 
 public class LocacaoService {
 		
-	private LocacaoDAO dao; 
+	private LocacaoDAO dao;
+	private SPCService spcService;
+	private EmailService emailService;
 	
 	public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws LocadoraException, FilmeSemEstoqueException {
 
@@ -26,6 +28,17 @@ public class LocacaoService {
 			throw new LocadoraException("Usuario vazio");
 		}
 		
+		boolean negativado;
+		
+		try {
+			negativado = spcService.possuiNegativacao(usuario);
+		} catch (Exception e) {
+			throw new LocadoraException("Problemas com SPC, tente novamente");
+		}
+		
+		if(negativado) {
+			throw new LocadoraException("Usuário negativado");
+		}
 		if(filmes == null || filmes.isEmpty()){
 			throw new LocadoraException("Não pode haver locação sem filmes");
 		}
@@ -74,14 +87,22 @@ public class LocacaoService {
 		
 		return locacao;
 	}
-
-	public LocacaoDAO getDao() {
-		return dao;
-	}
-
-	public void setDao(LocacaoDAO dao) {
-		this.dao = dao;
+	
+	public void notificarAtrasos() {
+		List<Locacao> locacoes = dao.obterLocacoesPendentes();
+		for (Locacao locacao : locacoes) {
+			if(locacao.getDataRetorno().before(new Date()))
+				emailService.notificarAtraso(locacao.getUsuario());
+		}
 	}
 	
-	
+	public void prorrogarLocacao(Locacao locacao, int dias) {
+		Locacao novaLocacao = new Locacao();
+		novaLocacao.setUsuario(locacao.getUsuario());
+		novaLocacao.setFilmes(locacao.getFilmes());
+		novaLocacao.setDataLocacao(new Date());
+		novaLocacao.setDataRetorno(DataUtils.obterDataComDiferencaDias(dias));
+		novaLocacao.setValor(locacao.getValor() * dias);
+		dao.salvar(novaLocacao);
+	}
 }
